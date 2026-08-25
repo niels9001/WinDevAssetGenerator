@@ -40,7 +40,7 @@ const presets: Array<{
     height: 303,
     startColor: "#94B6D0",
     endColor: "#AEC9DE",
-    iconColor: "#286A9F",
+    iconColor: "#2B699E",
     iconSize: 92,
     angle: 135,
   },
@@ -95,12 +95,12 @@ const presets: Array<{
 ];
 
 const gradients = [
-  ["Design", "#94B6D0", "#AEC9DE"],
-  ["Develop", "#65BFCB", "#82D3D9"],
-  ["Essentials", "#60AAD2", "#77B9DE"],
-  ["Package", "#A4B6A7", "#BACAB7"],
-  ["Publish", "#BBACC8", "#D3BFD7"],
-  ["Hub icons", "#4DD2FF", "#0078D4"],
+  ["Design", "#94B6D0", "#AEC9DE", "#2B699E"],
+  ["Develop", "#65BFCB", "#82D3D9", "#138E9F"],
+  ["Essentials", "#60AAD2", "#77B9DE", "#4F9AC3"],
+  ["Package", "#A4B6A7", "#BACAB7", "#5C8058"],
+  ["Publish", "#BBACC8", "#D3BFD7", "#AF6FC7"],
+  ["Hub icons", "#4DD2FF", "#0078D4", "#0078D4"],
 ];
 
 const initialGlyph =
@@ -115,7 +115,7 @@ const initialSettings: AssetSettings = {
   startColor: "#94B6D0",
   endColor: "#AEC9DE",
   angle: 135,
-  iconColor: "#286A9F",
+  iconColor: "#2B699E",
   iconSize: 92,
   iconX: 269.5,
   iconY: 151.5,
@@ -303,7 +303,7 @@ function App() {
               </div>
             </div>
             <div className="gradient-grid">
-              {gradients.map(([name, start, end]) => (
+              {gradients.map(([name, start, end, iconColor]) => (
                 <button
                   key={name}
                   className="gradient-swatch"
@@ -314,6 +314,7 @@ function App() {
                       ...current,
                       startColor: start,
                       endColor: end,
+                      iconColor: current.mode === "gradient" ? iconColor : current.iconColor,
                     }))
                   }
                 >
