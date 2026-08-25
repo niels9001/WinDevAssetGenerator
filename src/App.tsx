@@ -13,7 +13,7 @@ import {
   Upload,
 } from "lucide-react";
 import iconCatalog from "./data/segoe-fluent-icons.json";
-import { createAssetSvg, exportRaster, exportSvg } from "./asset";
+import { createAssetSvg, exportPng, exportSvg } from "./asset";
 import { recommendIcons, searchIcons } from "./recommendations";
 import { importSvg } from "./svgImport";
 import type { AssetMode, AssetSettings, IconDefinition } from "./types";
@@ -35,13 +35,13 @@ const presets: Array<{
   {
     id: "gradient",
     label: "Overview tile",
-    description: "Gradient tile with a centered glyph",
-    width: 800,
-    height: 450,
-    startColor: "#0078D4",
-    endColor: "#50E6FF",
-    iconColor: "#FFFFFF",
-    iconSize: 168,
+    description: "Current pastel tile with a center plate",
+    width: 539,
+    height: 303,
+    startColor: "#94B6D0",
+    endColor: "#AEC9DE",
+    iconColor: "#286A9F",
+    iconSize: 92,
     angle: 135,
   },
   {
@@ -95,12 +95,12 @@ const presets: Array<{
 ];
 
 const gradients = [
-  ["Azure", "#0078D4", "#50E6FF"],
-  ["Cobalt", "#0F6CBD", "#7F85F5"],
-  ["Aqua", "#008272", "#50E6FF"],
-  ["Sunset", "#C239B3", "#FFB900"],
-  ["Coral", "#D13438", "#FF8C00"],
-  ["Forest", "#0B6A0B", "#92C353"],
+  ["Design", "#94B6D0", "#AEC9DE"],
+  ["Develop", "#65BFCB", "#82D3D9"],
+  ["Essentials", "#60AAD2", "#77B9DE"],
+  ["Package", "#A4B6A7", "#BACAB7"],
+  ["Publish", "#BBACC8", "#D3BFD7"],
+  ["Hub icons", "#4DD2FF", "#0078D4"],
 ];
 
 const initialGlyph =
@@ -110,15 +110,15 @@ const initialGlyph =
 
 const initialSettings: AssetSettings = {
   mode: "gradient",
-  width: 800,
-  height: 450,
-  startColor: "#0078D4",
-  endColor: "#50E6FF",
+  width: 539,
+  height: 303,
+  startColor: "#94B6D0",
+  endColor: "#AEC9DE",
   angle: 135,
-  iconColor: "#FFFFFF",
-  iconSize: 168,
-  iconX: 400,
-  iconY: 225,
+  iconColor: "#286A9F",
+  iconSize: 92,
+  iconX: 269.5,
+  iconY: 151.5,
   glyph: initialGlyph,
   iconSource: "font",
   customSvg: null,
@@ -155,7 +155,7 @@ function App() {
   const [query, setQuery] = useState("");
   const [showAllIcons, setShowAllIcons] = useState(false);
   const [pngScale, setPngScale] = useState(2);
-  const [rasterFormat, setRasterFormat] = useState<"png" | "webp">("png");
+  const [exportFormat, setExportFormat] = useState<"svg" | "png">("svg");
   const [notice, setNotice] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
   const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
@@ -529,65 +529,72 @@ function App() {
           </div>
 
           <div className="export-card">
-            <div className="format-badge">SVG</div>
-            <div>
-              <strong>Scalable vector</strong>
-              <p>Best for documentation source and later edits.</p>
-            </div>
-            <button className="primary-button" onClick={() => exportSvg(settings)}>
-              <Download size={17} />
-              Download SVG
-            </button>
-            <button className="secondary-button" onClick={copySvg}>
-              <Clipboard size={17} />
-              Copy markup
-            </button>
-          </div>
-
-          <div className="export-card">
-            <div className="format-badge">{rasterFormat.toUpperCase()}</div>
-            <div>
-              <strong>Portable bitmap</strong>
-              <p>Use PNG for docs or WebP for a smaller blog image.</p>
-            </div>
             <label className="select-field">
               <span>Format</span>
               <select
-                value={rasterFormat}
-                onChange={(event) => setRasterFormat(event.target.value as "png" | "webp")}
+                value={exportFormat}
+                onChange={(event) => setExportFormat(event.target.value as "svg" | "png")}
               >
-                <option value="png">PNG · lossless</option>
-                <option value="webp">WebP · optimized</option>
+                <option value="svg">SVG · scalable vector</option>
+                <option value="png">PNG · portable bitmap</option>
               </select>
             </label>
-            <label className="select-field">
-              <span>Export scale</span>
-              <select value={pngScale} onChange={(event) => setPngScale(Number(event.target.value))}>
-                <option value="1">1× · {settings.width} × {settings.height}</option>
-                <option value="2">2× · {settings.width * 2} × {settings.height * 2}</option>
-                <option value="3">3× · {settings.width * 3} × {settings.height * 3}</option>
-              </select>
-            </label>
-            <button
-              className="primary-button"
-              onClick={() =>
-                exportRaster(settings, pngScale, rasterFormat).catch((error) =>
-                  setNotice(error instanceof Error ? error.message : "Raster export failed."),
-                )
-              }
-            >
-              <Download size={17} />
-              Download {rasterFormat.toUpperCase()}
-            </button>
+            {exportFormat === "svg" ? (
+              <>
+                <div>
+                  <strong>Scalable vector</strong>
+                  <p>Best for documentation source and later edits.</p>
+                </div>
+                <button className="primary-button" onClick={() => exportSvg(settings)}>
+                  <Download size={17} />
+                  Download SVG
+                </button>
+                <button className="secondary-button" onClick={copySvg}>
+                  <Clipboard size={17} />
+                  Copy markup
+                </button>
+              </>
+            ) : (
+              <>
+                <div>
+                  <strong>Portable bitmap</strong>
+                  <p>Rasterizes the glyph for consistent rendering everywhere.</p>
+                </div>
+                <label className="select-field">
+                  <span>Export scale</span>
+                  <select
+                    value={pngScale}
+                    onChange={(event) => setPngScale(Number(event.target.value))}
+                  >
+                    <option value="1">1× · {settings.width} × {settings.height}</option>
+                    <option value="2">2× · {settings.width * 2} × {settings.height * 2}</option>
+                    <option value="3">3× · {settings.width * 3} × {settings.height * 3}</option>
+                  </select>
+                </label>
+                <button
+                  className="primary-button"
+                  onClick={() =>
+                    exportPng(settings, pngScale).catch((error) =>
+                      setNotice(error instanceof Error ? error.message : "PNG export failed."),
+                    )
+                  }
+                >
+                  <Download size={17} />
+                  Download PNG
+                </button>
+              </>
+            )}
           </div>
 
-          <div className="font-note">
-            <strong>Font portability</strong>
-            <p>
-              Font-based SVG files reference Segoe Fluent Icons. Use PNG when the asset must render on
-              systems without the font, or import an SVG for a path-based vector.
-            </p>
-          </div>
+          {exportFormat === "svg" && (
+            <div className="font-note">
+              <strong>Font portability</strong>
+              <p>
+                Font-based SVG files reference Segoe Fluent Icons. Use PNG when the asset must render
+                on systems without the font, or import an SVG for a path-based vector.
+              </p>
+            </div>
+          )}
           {notice && (
             <div className="notice" role="status">
               <Check size={16} />
