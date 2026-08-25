@@ -166,6 +166,7 @@ function App() {
     [query, settings.title],
   );
   const displayedIcons = showAllIcons ? visibleIcons : visibleIcons.slice(0, 80);
+  const selectedPreset = presets.find((preset) => preset.id === settings.mode)!;
   const svg = useMemo(() => createAssetSvg(settings), [settings]);
 
   const update = <K extends keyof AssetSettings>(key: K, value: AssetSettings[K]) =>
@@ -253,24 +254,20 @@ function App() {
                 <p>Start from a reusable output preset.</p>
               </div>
             </div>
-            <div className="preset-grid">
-              {presets.map((preset) => (
-                <button
-                  key={preset.id}
-                  className={`preset ${settings.mode === preset.id ? "selected" : ""}`}
-                  onClick={() => choosePreset(preset.id)}
-                >
-                  <span className="preset-icon">
-                    {preset.id === "blue-icon" ? <Image size={20} /> : <span />}
-                  </span>
-                  <span>
-                    <strong>{preset.label}</strong>
-                    <small>{preset.description}</small>
-                  </span>
-                  {settings.mode === preset.id && <Check size={18} />}
-                </button>
-              ))}
-            </div>
+            <label className="select-field preset-select">
+              <span>Asset preset</span>
+              <select
+                value={settings.mode}
+                onChange={(event) => choosePreset(event.target.value as AssetMode)}
+              >
+                {presets.map((preset) => (
+                  <option key={preset.id} value={preset.id}>
+                    {preset.label} · {preset.width} × {preset.height}
+                  </option>
+                ))}
+              </select>
+              <small>{selectedPreset.description}</small>
+            </label>
             <div className="field-row">
               <NumberField
                 label="Width"

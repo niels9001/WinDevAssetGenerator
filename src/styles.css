@@ -221,59 +221,11 @@ h2 {
   font-weight: 700;
 }
 
-.preset-grid {
-  display: grid;
-  gap: 8px;
+.preset-select {
   margin-bottom: 14px;
 }
 
-.preset {
-  display: grid;
-  grid-template-columns: 34px 1fr auto;
-  gap: 10px;
-  align-items: center;
-  width: 100%;
-  padding: 10px;
-  border: 1px solid var(--cp-border);
-  border-radius: 0.625rem;
-  background: var(--cp-surface);
-  text-align: left;
-  cursor: pointer;
-}
-
-.preset.selected {
-  border-color: var(--cp-accent);
-  background: var(--cp-accent-soft);
-}
-
-.preset-icon {
-  display: grid;
-  width: 34px;
-  height: 28px;
-  place-items: center;
-  border: 1px solid var(--cp-border);
-  border-radius: 6px;
-  background: var(--cp-surface-soft);
-}
-
-.preset-icon span {
-  width: 22px;
-  height: 13px;
-  border-radius: 2px;
-  background: var(--cp-accent);
-}
-
-.preset strong,
-.preset small {
-  display: block;
-}
-
-.preset strong {
-  font-size: 13px;
-}
-
-.preset small {
-  margin-top: 2px;
+.preset-select small {
   color: var(--cp-text-muted);
   font-size: 11px;
 }
