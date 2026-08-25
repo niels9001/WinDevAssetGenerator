@@ -1,4 +1,4 @@
-export type AssetMode = "gradient" | "blue-icon" | "banner";
+export type AssetMode = "gradient" | "blue-icon" | "banner" | "social-card" | "wide-hero";
 export type IconSource = "font" | "custom";
 
 export interface IconDefinition {

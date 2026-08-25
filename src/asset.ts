@@ -59,7 +59,7 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "") || "windows-dev-asset";
 
-export const assetFilename = (settings: AssetSettings, extension: "svg" | "png") =>
+export const assetFilename = (settings: AssetSettings, extension: "svg" | "png" | "webp") =>
   `${slugify(settings.title || settings.glyph.name)}.${extension}`;
 
 export const downloadBlob = (blob: Blob, filename: string) => {
@@ -78,7 +78,11 @@ export const exportSvg = (settings: AssetSettings) => {
   );
 };
 
-export const exportPng = async (settings: AssetSettings, scale: number) => {
+export const exportRaster = async (
+  settings: AssetSettings,
+  scale: number,
+  format: "png" | "webp",
+) => {
   await document.fonts.load(`${settings.iconSize}px "Segoe Fluent Icons"`);
   const svg = createAssetSvg(settings);
   const image = new Image();
@@ -105,9 +109,10 @@ export const exportPng = async (settings: AssetSettings, scale: number) => {
 
   const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
-      (result) => (result ? resolve(result) : reject(new Error("PNG export failed."))),
-      "image/png",
+      (result) => (result ? resolve(result) : reject(new Error(`${format.toUpperCase()} export failed.`))),
+      `image/${format}`,
+      format === "webp" ? 0.9 : undefined,
     );
   });
-  downloadBlob(blob, assetFilename(settings, "png"));
+  downloadBlob(blob, assetFilename(settings, format));
 };
