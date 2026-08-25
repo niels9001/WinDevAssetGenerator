@@ -13,7 +13,7 @@ import {
   Upload,
 } from "lucide-react";
 import iconCatalog from "./data/segoe-fluent-icons.json";
-import { createAssetSvg, exportPng, exportSvg } from "./asset";
+import { createAssetSvg, exportRaster, exportSvg } from "./asset";
 import { recommendIcons, searchIcons } from "./recommendations";
 import { importSvg } from "./svgImport";
 import type { AssetMode, AssetSettings, IconDefinition } from "./types";
@@ -58,14 +58,38 @@ const presets: Array<{
   },
   {
     id: "banner",
-    label: "Blog banner",
-    description: "Wide editorial banner",
+    label: "Blog header",
+    description: "Current 16:9 decorative header",
     width: 1600,
     height: 900,
     startColor: "#0F6CBD",
     endColor: "#7F85F5",
     iconColor: "#FFFFFF",
     iconSize: 320,
+    angle: 135,
+  },
+  {
+    id: "social-card",
+    label: "Social card",
+    description: "Open Graph and sharing image",
+    width: 1200,
+    height: 628,
+    startColor: "#0F6CBD",
+    endColor: "#7F85F5",
+    iconColor: "#FFFFFF",
+    iconSize: 240,
+    angle: 135,
+  },
+  {
+    id: "wide-hero",
+    label: "Wide blog hero",
+    description: "Cinematic CLI announcement hero",
+    width: 1440,
+    height: 598,
+    startColor: "#0F6CBD",
+    endColor: "#7F85F5",
+    iconColor: "#FFFFFF",
+    iconSize: 260,
     angle: 135,
   },
 ];
@@ -131,6 +155,7 @@ function App() {
   const [query, setQuery] = useState("");
   const [showAllIcons, setShowAllIcons] = useState(false);
   const [pngScale, setPngScale] = useState(2);
+  const [rasterFormat, setRasterFormat] = useState<"png" | "webp">("png");
   const [notice, setNotice] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
   const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
@@ -520,11 +545,21 @@ function App() {
           </div>
 
           <div className="export-card">
-            <div className="format-badge">PNG</div>
+            <div className="format-badge">{rasterFormat.toUpperCase()}</div>
             <div>
               <strong>Portable bitmap</strong>
-              <p>Rasterizes the glyph for consistent rendering everywhere.</p>
+              <p>Use PNG for docs or WebP for a smaller blog image.</p>
             </div>
+            <label className="select-field">
+              <span>Format</span>
+              <select
+                value={rasterFormat}
+                onChange={(event) => setRasterFormat(event.target.value as "png" | "webp")}
+              >
+                <option value="png">PNG · lossless</option>
+                <option value="webp">WebP · optimized</option>
+              </select>
+            </label>
             <label className="select-field">
               <span>Export scale</span>
               <select value={pngScale} onChange={(event) => setPngScale(Number(event.target.value))}>
@@ -536,13 +571,13 @@ function App() {
             <button
               className="primary-button"
               onClick={() =>
-                exportPng(settings, pngScale).catch((error) =>
-                  setNotice(error instanceof Error ? error.message : "PNG export failed."),
+                exportRaster(settings, pngScale, rasterFormat).catch((error) =>
+                  setNotice(error instanceof Error ? error.message : "Raster export failed."),
                 )
               }
             >
               <Download size={17} />
-              Download PNG
+              Download {rasterFormat.toUpperCase()}
             </button>
           </div>
 
