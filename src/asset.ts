@@ -37,11 +37,16 @@ const customIconMarkup = (customSvg: CustomSvg, settings: AssetSettings, paint: 
 
 export const createAssetSvg = (settings: AssetSettings) => {
   const points = gradientPoints(settings.angle);
-  const definitions = `<defs><linearGradient id="background" x1="${points.x1}" y1="${points.y1}" x2="${points.x2}" y2="${points.y2}"><stop offset="0%" stop-color="${settings.startColor}"/><stop offset="100%" stop-color="${settings.endColor}"/></linearGradient><linearGradient id="icon-gradient" x1="${points.x1}" y1="${points.y1}" x2="${points.x2}" y2="${points.y2}"><stop offset="0%" stop-color="${settings.startColor}"/><stop offset="75%" stop-color="${settings.endColor}"/></linearGradient></defs>`;
+  const definitions = `<defs><linearGradient id="background" x1="${points.x1}" y1="${points.y1}" x2="${points.x2}" y2="${points.y2}"><stop offset="0%" stop-color="${settings.startColor}"/><stop offset="100%" stop-color="${settings.endColor}"/></linearGradient><linearGradient id="icon-gradient" x1="${points.x1}" y1="${points.y1}" x2="${points.x2}" y2="${points.y2}"><stop offset="0%" stop-color="${settings.startColor}"/><stop offset="75%" stop-color="${settings.endColor}"/></linearGradient><linearGradient id="plate" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FAFDFE"/><stop offset="100%" stop-color="#EDF4F7"/></linearGradient><filter id="plate-shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#24435A" flood-opacity="0.2"/></filter></defs>`;
   const background =
     settings.mode === "blue-icon"
       ? ""
       : `<rect width="100%" height="100%" fill="url(#background)"/>`;
+  const plateSize = settings.height * 0.63;
+  const plate =
+    settings.mode === "gradient"
+      ? `<rect x="${(settings.width - plateSize) / 2}" y="${(settings.height - plateSize) / 2}" width="${plateSize}" height="${plateSize}" rx="${plateSize * 0.11}" fill="url(#plate)" filter="url(#plate-shadow)"/>`
+      : "";
   const iconPaint = settings.mode === "blue-icon" ? "url(#icon-gradient)" : settings.iconColor;
 
   const icon =
@@ -49,7 +54,7 @@ export const createAssetSvg = (settings: AssetSettings) => {
       ? customIconMarkup(settings.customSvg, settings, iconPaint)
       : `<text x="${settings.iconX}" y="${settings.iconY}" fill="${iconPaint}" font-family="Segoe Fluent Icons" font-size="${settings.iconSize}" text-anchor="middle" dominant-baseline="central">&#x${settings.glyph.codepoint};</text>`;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${settings.width}" height="${settings.height}" viewBox="0 0 ${settings.width} ${settings.height}" role="img" aria-label="${escapeXml(settings.title || settings.glyph.name)}">${definitions}${background}${icon}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${settings.width}" height="${settings.height}" viewBox="0 0 ${settings.width} ${settings.height}" role="img" aria-label="${escapeXml(settings.title || settings.glyph.name)}">${definitions}${background}${plate}${icon}</svg>`;
 };
 
 const slugify = (value: string) =>
@@ -59,7 +64,7 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "") || "windows-dev-asset";
 
-export const assetFilename = (settings: AssetSettings, extension: "svg" | "png" | "webp") =>
+export const assetFilename = (settings: AssetSettings, extension: "svg" | "png") =>
   `${slugify(settings.title || settings.glyph.name)}.${extension}`;
 
 export const downloadBlob = (blob: Blob, filename: string) => {
@@ -78,11 +83,7 @@ export const exportSvg = (settings: AssetSettings) => {
   );
 };
 
-export const exportRaster = async (
-  settings: AssetSettings,
-  scale: number,
-  format: "png" | "webp",
-) => {
+export const exportPng = async (settings: AssetSettings, scale: number) => {
   await document.fonts.load(`${settings.iconSize}px "Segoe Fluent Icons"`);
   const svg = createAssetSvg(settings);
   const image = new Image();
@@ -109,10 +110,9 @@ export const exportRaster = async (
 
   const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
-      (result) => (result ? resolve(result) : reject(new Error(`${format.toUpperCase()} export failed.`))),
-      `image/${format}`,
-      format === "webp" ? 0.9 : undefined,
+      (result) => (result ? resolve(result) : reject(new Error("PNG export failed."))),
+      "image/png",
     );
   });
-  downloadBlob(blob, assetFilename(settings, format));
+  downloadBlob(blob, assetFilename(settings, "png"));
 };

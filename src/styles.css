@@ -653,20 +653,6 @@ a:focus-visible {
   background: var(--cp-surface-soft);
 }
 
-.format-badge {
-  display: grid;
-  width: 42px;
-  height: 30px;
-  place-items: center;
-  border: 1px solid var(--cp-border);
-  border-radius: 7px;
-  background: var(--cp-surface);
-  color: var(--cp-accent);
-  font-family: Consolas, "Courier New", Courier, monospace;
-  font-size: 11px;
-  font-weight: 700;
-}
-
 .export-card strong {
   font-size: 13px;
 }
@@ -735,15 +721,6 @@ a:focus-visible {
   }
 
   .export-panel {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .export-panel > .section-heading,
-  .export-panel > .font-note,
-  .export-panel > .notice {
     grid-column: 1 / -1;
   }
 }
